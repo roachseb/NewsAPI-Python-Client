@@ -19,6 +19,13 @@ pip install newsapi-python-client
 ```
 
 ## Usage
+Create a secrets.json file in the base directory of the project with the following structure:
+
+```json
+{
+    "NEWS_API_KEY": "YOUR_NEWS_API_KEY"
+}
+```
 
 ```python
 from services.news_service import get_finance_news
