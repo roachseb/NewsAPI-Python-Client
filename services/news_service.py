@@ -1,35 +1,27 @@
-import os
-import json
 import requests
 from models.request_model import RequestModel
-from models.response_model import ResponseModel
+from models.response_model import EverythingResponseModel, ResponseModel, TopHeadlinesResponseModel, SourcesResponseModel
 
-# Get the absolute path of the secrets.json file
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SECRETS_PATH = os.path.join(BASE_DIR, 'secrets.json')
+class _NewsAPIClient:  # Single underscore indicates for internal use
+    def __init__(self, api_key):
+        self.api_key = api_key
+        self.base_url = 'https://newsapi.org/v2/'
 
+    def make_request(self, endpoint: str, request_model: RequestModel, response_model_cls: type) -> 'ResponseModel':
+        headers = {'X-Api-Key': self.api_key}
+        response = requests.get(self.base_url + endpoint, headers=headers, params=request_model.to_dict())
+        response.raise_for_status()
+        return response_model_cls.from_dict(response.json())
 
-def get_finance_news(request_model: RequestModel) -> ResponseModel:
-    """
-    Fetches finance news from the News API based on the parameters provided in the request model.
+class NewsAPIService:
+    def __init__(self, api_key):
+        self.client = _NewsAPIClient(api_key)  # Instantiate client within service class
 
-    Args:
-        request_model (RequestModel): The parameters for the News API request.
+    def everything(self, request_model: RequestModel) -> EverythingResponseModel:
+        return self.client.make_request('everything', request_model, EverythingResponseModel)
 
-    Returns:
-        ResponseModel: The response from the News API.
-    """
-    with open(SECRETS_PATH) as f:
-        secrets = json.load(f)
+    def top_headlines(self, request_model: RequestModel) -> TopHeadlinesResponseModel:
+        return self.client.make_request('top-headlines', request_model, TopHeadlinesResponseModel)
 
-    API_KEY = secrets['NEWS_API_KEY']
-
-    response = requests.get(
-        'https://newsapi.org/v2/everything',
-        headers={'X-Api-Key': API_KEY},
-        params=request_model.to_dict()
-    )
-
-    response.raise_for_status()
-
-    return ResponseModel.from_dict(response.json())
+    def sources(self, request_model: RequestModel) -> SourcesResponseModel:
+        return self.client.make_request('sources', request_model, SourcesResponseModel)
