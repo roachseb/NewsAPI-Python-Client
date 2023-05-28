@@ -1,16 +1,18 @@
+Based on the updated structure of your library, here's a revised README:
+
 # NewsAPI Python Client
 
 ## Description
 
-This project provides a Python client for accessing the NewsAPI. It aims to make it easier for developers to integrate news searching capabilities into their applications. Whether you are building a news aggregation service, a stock trading platform that needs financial news, or a social media app that needs to show relevant news to users, this library is for you.
+This project provides a Python client for accessing the NewsAPI. It simplifies the process of integrating news search capabilities into your applications. Whether you're building a news aggregation service, a stock trading platform that needs financial news, or a social media app that wants to display relevant news to users, this library is here to assist.
 
 ## Features
 
-- Simple and intuitive Python interface to the NewsAPI.
-- Uses the `requests` library for making HTTP requests.
-- Object-oriented models for request and response data.
+- Intuitive Python interface for NewsAPI.
+- Leverages the `requests` library for HTTP requests.
+- Employs an object-oriented model for both requests and responses.
 - Supports all parameters of the NewsAPI, including advanced search queries and filtering.
-- Built with flexibility and extensibility in mind, allowing developers to customize it according to their needs.
+- Designed for flexibility and extensibility, allowing for customization as needed.
 
 ## Installation
 
@@ -19,41 +21,34 @@ pip install newsapi-python-client
 ```
 
 ## Usage
-Create a secrets.json file in the base directory of the project with the following structure:
 
-```json
-{
-    "NEWS_API_KEY": "YOUR_NEWS_API_KEY"
-}
-```
+First, you need to initialize the `NewsAPIService` with your NewsAPI key.
 
 ```python
-from services.news_service import get_finance_news
-from models.request_model import RequestModel
+import os
+from newsApi.service import NewsAPIService  
 
-request_model = RequestModel(
+news_api_service = NewsAPIService(os.environ.get('NEWS_API_KEY'))
+```
+
+Then you can use the service to make requests. Here is an example for retrieving news about finance:
+
+```python
+from newsApi.models.request import EverythingRequestModel
+
+request_model = EverythingRequestModel(
     q='finance',
-    searchIn='title,content',
-    sources='source1,source2',
-    domains='domain1.com,domain2.com',
-    excludeDomains='excludedomain1.com,excludedomain2.com',
-    from_param='2023-05-01T00:00:00',
-    to='2023-05-27T23:59:59',
-    language='en',
-    sortBy='popularity',
-    pageSize=100,
-    page=1
 )
 
-response_model = get_finance_news(request_model)
+response = news_api_service.everything(request_model)
 
-for article in response_model.articles:
+for article in response.articles:
     print(f"Title: {article.title}")
     print(f"URL: {article.url}")
     print("---")
 ```
 
-Note: Remember to replace placeholder values in the `RequestModel` with actual values.
+Note: Remember to replace placeholder values in the `EverythingRequestModel` with actual values.
 
 ## Requirements
 
@@ -62,13 +57,13 @@ Note: Remember to replace placeholder values in the `RequestModel` with actual v
 
 ## Future Plans
 
-- Improve error handling and validation.
-- Add more examples and use cases.
-- Create more comprehensive documentation.
+- Enhance error handling and validation.
+- Include more examples and use cases.
+- Develop comprehensive documentation.
 
 ## Contributing
 
-We welcome contributions from the community. Please refer to the CONTRIBUTING.md file for more details.
+Contributions from the community are welcome. Please refer to the CONTRIBUTING.md file for more details.
 
 ## License
 
