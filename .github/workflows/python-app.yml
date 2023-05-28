@@ -45,11 +45,11 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/production' || github.ref == 'refs/heads/development'
+    if: github.ref == 'refs/heads/production'
 
     steps:
     - name: Deploy to Production
-      if: github.ref == 'refs/heads/production'
+      working-directory: ${{ github.workspace }}
       run: |
         echo "Deploying to Production"
         python -m pip install --upgrade setuptools wheel twine
@@ -58,9 +58,3 @@ jobs:
       env:
         TWINE_USERNAME: ${{ env.TWINE_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
-        
-
-    - name: Deploy to Development
-      if: github.ref == 'refs/heads/development'
-      run: |
-        echo "No deployment for Development"
