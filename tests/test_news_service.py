@@ -1,9 +1,9 @@
 import os
 import pytest
 import requests_mock
-from models.request_model import EverythingRequestModel, Language, TopHeadlinesRequestModel, SourcesRequestModel
-from models.response_model import EverythingResponseModel, TopHeadlinesResponseModel, SourcesResponseModel
-from services.news_service import NewsAPIService  
+from newsApi.models.request import EverythingRequestModel, Language, TopHeadlinesRequestModel, SourcesRequestModel
+from newsApi.models.response import EverythingResponseModel, TopHeadlinesResponseModel, SourcesResponseModel
+from newsApi.service import NewsAPIService  
 @pytest.fixture
 def news_api_service():
     return NewsAPIService(os.environ.get('NEWS_API_KEY'))
