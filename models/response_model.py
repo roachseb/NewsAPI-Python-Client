@@ -1,16 +1,14 @@
-from dataclasses import dataclass
 from typing import List, Optional
+import dataclasses
 
-@dataclass
+
+@dataclasses.dataclass
 class Source:
-    id: Optional[str]
+    id: str
     name: str
 
-    @classmethod
-    def from_dict(cls, data: dict) -> 'Source':
-        return cls(id=data.get('id'), name=data['name'])
 
-@dataclass
+@dataclasses.dataclass
 class Article:
     source: Source
     author: Optional[str]
@@ -22,39 +20,65 @@ class Article:
     content: Optional[str]
 
     @classmethod
-    def from_dict(cls, data: dict) -> 'Article':
-        source = Source.from_dict(data['source'])
+    def from_dict(cls, data: dict) -> "Article":
         return cls(
-            source=source,
-            author=data.get('author'),
-            title=data['title'],
-            description=data.get('description'),
-            url=data['url'],
-            urlToImage=data.get('urlToImage'),
-            publishedAt=data['publishedAt'],
-            content=data.get('content')
+            source=Source(**data.get("source", {})),
+            author=data.get("author"),
+            title=data.get("title"),
+            description=data.get("description"),
+            url=data.get("url"),
+            urlToImage=data.get("urlToImage"),
+            publishedAt=data.get("publishedAt"),
+            content=data.get("content"),
         )
 
 
-@dataclass
-class ResponseModel:
-    """
-    A data class that represents the response from News API.
-
-    Attributes:
-        - status (str): If the request was successful or not. Options: ok, error.
-        - totalResults (int): The total number of results available for your request.
-        - articles (List[Article]): The results of the request.
-    """
+@dataclasses.dataclass
+class TopHeadlinesResponseModel:
     status: str
     totalResults: int
     articles: List[Article]
 
     @classmethod
-    def from_dict(cls, data: dict) -> 'ResponseModel':
-        articles = [Article.from_dict(article) for article in data['articles']]
+    def from_dict(cls, data: dict) -> "TopHeadlinesResponseModel":
+        articles = [Article.from_dict(article) for article in data.get("articles", [])]
         return cls(
-            status=data['status'],
-            totalResults=data['totalResults'],
-            articles=articles
+            status=data.get("status", ""),
+            totalResults=data.get("totalResults", 0),
+            articles=articles,
+        )
+
+
+@dataclasses.dataclass
+class ResponseModel:
+    status: str
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "ResponseModel":
+        raise NotImplementedError()
+
+
+@dataclasses.dataclass
+class EverythingResponseModel(ResponseModel):
+    totalResults: int
+    articles: List[Article]
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "EverythingResponseModel":
+        articles = [Article.from_dict(article) for article in data["articles"]]
+        return cls(
+            status=data["status"], totalResults=data["totalResults"], articles=articles
+        )
+
+
+@dataclasses.dataclass
+class SourcesResponseModel(ResponseModel):
+    sources: List[Source]
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "SourcesResponseModel":
+        sources = [Source(**source) for source in data.get("sources", [])]
+        return cls(
+            status=data["status"],
+            sources=sources,
         )

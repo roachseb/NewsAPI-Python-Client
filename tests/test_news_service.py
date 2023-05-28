@@ -1,23 +1,35 @@
+import os
 import pytest
-from models.request_model import RequestModel
-from services.news_service import get_finance_news
+import requests_mock
+from models.request_model import EverythingRequestModel, Language, TopHeadlinesRequestModel, SourcesRequestModel
+from models.response_model import EverythingResponseModel, TopHeadlinesResponseModel, SourcesResponseModel
+from services.news_service import NewsAPIService  
+@pytest.fixture
+def news_api_service():
+    return NewsAPIService(os.environ.get('NEWS_API_KEY'))
 
-def test_get_finance_news():
-    request_model = RequestModel(
-        q='finance',
-        searchIn='title,content',
-        from_param='2023-05-01T00:00:00',
-        to='2023-05-27T23:59:59',
-        language='en',
-        sortBy='popularity',
-        pageSize=100,
-        page=1
-    )
+def test_everything(news_api_service):
+    request_model = EverythingRequestModel(q="test")
+    with requests_mock.Mocker() as m:
+        m.get('https://newsapi.org/v2/everything', json={"status": "ok", "totalResults": 10, "articles": []})
+        response = news_api_service.everything(request_model)
+    assert isinstance(response, EverythingResponseModel)
+    assert response.status == 'ok'
+    assert response.totalResults == 10
 
-    response_model = get_finance_news(request_model)
+def test_top_headlines(news_api_service):
+    request_model = TopHeadlinesRequestModel(q="test")
+    with requests_mock.Mocker() as m:
+        m.get('https://newsapi.org/v2/top-headlines', json={"status": "ok", "totalResults": 10, "articles": []})
+        response = news_api_service.top_headlines(request_model)
+    assert isinstance(response, TopHeadlinesResponseModel)
+    assert response.status == 'ok'
+    assert response.totalResults == 10
 
-    assert response_model.status == 'ok'
-    assert isinstance(response_model.totalResults, int)
-    assert response_model.totalResults > 0
-    assert len(response_model.articles) > 0
-
+def test_sources(news_api_service):
+    request_model = SourcesRequestModel(language=Language.EN)
+    with requests_mock.Mocker() as m:
+        m.get('https://newsapi.org/v2/sources', json={"status": "ok", "sources": []})
+        response = news_api_service.sources(request_model)
+    assert isinstance(response, SourcesResponseModel)
+    assert response.status == 'ok'
