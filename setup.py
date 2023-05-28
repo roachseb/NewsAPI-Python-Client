@@ -8,7 +8,7 @@ with open(os.path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='newsapi-python-client',
-    version='0.2.3',
+    version='0.2.4',
     url='https://github.com/roachseb/NewsAPI-Python-Client',
     author='Roach Sebastien',
     author_email='sebastien.r.r@hotmail.com',
