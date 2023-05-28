@@ -41,7 +41,7 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/production' || github.ref == 'refs/heads/develop'
+    if: github.ref == 'refs/heads/production'
 
     steps:
     - name: Install pypa/build
