@@ -2,9 +2,9 @@ name: Python application
 
 on:
   push:
-    branches: [ "development", "production" ]
+    branches: [ "develop", "production" ]
   pull_request:
-    branches: [ "development", "production" ]
+    branches: [ "develop", "production" ]
 
 permissions:
   contents: read
@@ -41,7 +41,7 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/production' || github.ref == 'refs/heads/development'
+    if: github.ref == 'refs/heads/production' || github.ref == 'refs/heads/develo'
 
     steps:
     - name: Install pypa/build
